@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import org.d3if4004.hitungbmi.databinding.FragmentHistoriBinding
 import org.d3if4004.hitungbmi.db.BmiDb
 
@@ -20,6 +23,7 @@ class HistoriFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentHistoriBinding
+    private lateinit var myAdapter: HistoriAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +32,15 @@ class HistoriFragment : Fragment() {
     ): View? {
         binding = FragmentHistoriBinding.inflate(layoutInflater,
                     container, false)
+        myAdapter = HistoriAdapter()
+        with(binding.recyclerView) {
+            addItemDecoration(
+                DividerItemDecoration(context,
+                RecyclerView.VERTICAL)
+            )
+            adapter = myAdapter
+            setHasFixedSize(true)
+        }
         return binding.root
     }
 
@@ -35,7 +48,9 @@ class HistoriFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.data.observe(viewLifecycleOwner, {
-            Log.d("HistoriFragment", "Jumlah data: ${it.size}")
+            binding.emptyView.visibility = if (it.isEmpty())
+                View.VISIBLE else View.GONE
+            myAdapter.updateData(it)
         })
     }
 }
